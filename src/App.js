@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
 
 function App() {
+  function handleSubmit(event) {
+    event.preventDefault();
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form>
+        <label htmlFor="email">Email</label>
+        <input type="email" name="email" />
+
+        <label htmlFor="password">Password</label>
+        <input type="password" name="password" />
+
+        <label>
+          <input type="checkbox" name="remember" />
+          <span>Remember me</span>
+        </label>
+
+        <button type="submit" onClick={handleSubmit}>
+          Submit
+        </button>
+      </form>
     </div>
   );
 }
