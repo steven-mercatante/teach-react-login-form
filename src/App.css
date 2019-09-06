@@ -4,6 +4,7 @@ html {
 
 .App {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -34,6 +35,10 @@ input {
   box-shadow: inset 0 2px 4px 0 hsla(0, 0%, 0%, 0.08);
 }
 
+input.invalid {
+  border-color: red;
+}
+
 button {
   margin-top: 6px;
   font-size: 1rem;
@@ -48,6 +53,10 @@ button {
 
 button:hover {
   background-color: #22ddf6;
+}
+
+button:disabled {
+  background-color: #999;
 }
 
 span {
