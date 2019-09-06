@@ -10,7 +10,7 @@ const schema = yup.object().shape({
   password: yup
     .string()
     .min(3)
-    .matches(/foo/)
+    // .matches(/foo/, "Password must contain 'foo'")
     .required()
 });
 
@@ -27,8 +27,6 @@ function Errors({ errors }) {
 }
 
 function App() {
-  const [isValid, setIsValid] = useState(false);
-
   const [fields, setFields] = useState({
     email: "",
     password: "",
@@ -40,6 +38,13 @@ function App() {
     password: null
   });
 
+  const formIsValid =
+    fields.email !== "" &&
+    fields.password !== "" &&
+    !errors.email &&
+    !errors.password;
+  // console.log(`TCL: App -> formIsValid`, formIsValid);
+
   function handleInputChange(event) {
     const { target } = event;
     const { name } = target;
@@ -47,50 +52,23 @@ function App() {
     const value = target.type === "checkbox" ? target.checked : target.value;
 
     if (target.type !== "checkbox") {
-      if (errors[name]) {
-        validateField2(name, value);
-      }
+      // if (errors[name]) {
+      // TODO: combine w/ above conditional
+      validateField(name, value);
+      // }
     }
 
     setFields({ ...fields, [name]: value });
   }
 
-  function validate() {
-    const emailIsValid = false;
-    const passwordIsValid = false;
-    const isValid = emailIsValid && passwordIsValid;
-
-    // schema.isValid({ fields.email.value }).then(valid => {
-    //   console.log(`TCL: validate -> valid`, valid);
-    // });
-
-    setIsValid(isValid);
-    return isValid;
-  }
-
-  function validateField(event) {
+  function handleBlur(event) {
     const { target } = event;
     const { name, value } = target;
-    console.log("validateField", name, value);
-
-    yup
-      .reach(schema, name)
-      .validate(value)
-      .then(valid => {
-        console.log(`${name} is valid`);
-        setErrors({ ...errors, [name]: null });
-        // setFields({ ...fields, [name]: { ...fields[name], isValid: true } });
-      })
-      .catch(e => {
-        console.log(e);
-        setErrors({ ...errors, [name]: e.errors });
-        // setFields({ ...fields, [name]: { ...fields[name], isValid: false } });
-      });
+    validateField(name, value);
   }
 
-  function validateField2(name, value) {
-    console.log("validateField2():", name, value);
-
+  function validateField(name, value) {
+    // console.log("validateField():", name, value);
     yup
       .reach(schema, name)
       .validate(value)
@@ -98,20 +76,18 @@ function App() {
         setErrors({ ...errors, [name]: null });
       })
       .catch(e => {
-        console.error(e);
         setErrors({ ...errors, [name]: e.errors });
       });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-    validate();
-    // if (validate()) {
-    //   console.table({ email, password, remember });
-    // } else {
-    //   alert("Form is not valid");
-    //   return;
-    // }
+    if (formIsValid) {
+      console.table(fields);
+    } else {
+      alert("Form is not valid");
+      return;
+    }
   }
 
   return (
@@ -124,7 +100,7 @@ function App() {
           name="email"
           value={fields.email}
           onChange={handleInputChange}
-          onBlur={validateField}
+          onBlur={handleBlur}
         />
         <Errors errors={errors["email"]} />
 
@@ -135,7 +111,7 @@ function App() {
           name="password"
           value={fields.password}
           onChange={handleInputChange}
-          onBlur={validateField}
+          onBlur={handleBlur}
         />
         <Errors errors={errors["password"]} />
 
@@ -149,12 +125,7 @@ function App() {
           <span>Remember me</span>
         </label>
 
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          disabled={!(fields.email.isValid && fields.password.isValid)}
-        >
-          {/* <button type="submit" onClick={handleSubmit}> */}
+        <button type="submit" onClick={handleSubmit} disabled={!formIsValid}>
           Submit
         </button>
       </form>
