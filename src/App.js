@@ -10,7 +10,7 @@ const schema = yup.object().shape({
   password: yup
     .string()
     .min(3)
-    // .matches(/foo/, "Password must contain 'foo'")
+    .matches(/foo/, "Password must contain 'foo'")
     .required()
 });
 
@@ -130,13 +130,13 @@ function App() {
         </button>
       </form>
 
-      <div>
+      {/* <div>
         <pre>{JSON.stringify(fields, null, 2)}</pre>
       </div>
 
       <div>
         <pre>{JSON.stringify(errors, null, 2)}</pre>
-      </div>
+      </div> */}
     </div>
   );
 }
