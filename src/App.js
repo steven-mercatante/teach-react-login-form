@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
-import useLoginForm from "./useLoginForm";
+import * as yup from "yup";
+
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .email()
+    .required(),
+  password: yup
+    .string()
+    .min(3)
+    .matches(/foo/, "Password must contain 'foo'")
+    .required()
+});
 
 function Errors({ errors }) {
   if (!errors) return null;
@@ -15,13 +27,58 @@ function Errors({ errors }) {
 }
 
 function App() {
-  const {
-    fields,
-    errors,
-    formIsValid,
-    handleInputChange,
-    handleBlur
-  } = useLoginForm();
+  const [fields, setFields] = useState({
+    email: "",
+    password: "",
+    remember: false
+  });
+
+  const [errors, setErrors] = useState({
+    email: null,
+    password: null
+  });
+
+  const formIsValid =
+    fields.email !== "" &&
+    fields.password !== "" &&
+    !errors.email &&
+    !errors.password;
+  // console.log(`TCL: App -> formIsValid`, formIsValid);
+
+  function handleInputChange(event) {
+    const { target } = event;
+    const { name } = target;
+
+    const value = target.type === "checkbox" ? target.checked : target.value;
+
+    if (target.type !== "checkbox") {
+      // if (errors[name]) {
+      // TODO: combine w/ above conditional
+      validateField(name, value);
+      // }
+    }
+
+    setFields({ ...fields, [name]: value });
+  }
+
+  function handleBlur(event) {
+    const { target } = event;
+    const { name, value } = target;
+    validateField(name, value);
+  }
+
+  function validateField(name, value) {
+    // console.log("validateField():", name, value);
+    yup
+      .reach(schema, name)
+      .validate(value)
+      .then(valid => {
+        setErrors({ ...errors, [name]: null });
+      })
+      .catch(e => {
+        setErrors({ ...errors, [name]: e.errors });
+      });
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -72,6 +129,14 @@ function App() {
           Submit
         </button>
       </form>
+
+      {/* <div>
+        <pre>{JSON.stringify(fields, null, 2)}</pre>
+      </div>
+
+      <div>
+        <pre>{JSON.stringify(errors, null, 2)}</pre>
+      </div> */}
     </div>
   );
 }
