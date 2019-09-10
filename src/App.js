@@ -43,7 +43,6 @@ function App() {
     fields.password !== "" &&
     !errors.email &&
     !errors.password;
-  // console.log(`TCL: App -> formIsValid`, formIsValid);
 
   function handleInputChange(event) {
     const { target } = event;
@@ -52,10 +51,7 @@ function App() {
     const value = target.type === "checkbox" ? target.checked : target.value;
 
     if (target.type !== "checkbox") {
-      // if (errors[name]) {
-      // TODO: combine w/ above conditional
       validateField(name, value);
-      // }
     }
 
     setFields({ ...fields, [name]: value });
@@ -68,7 +64,6 @@ function App() {
   }
 
   function validateField(name, value) {
-    // console.log("validateField():", name, value);
     yup
       .reach(schema, name)
       .validate(value)
